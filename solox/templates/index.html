@@ -137,7 +137,7 @@ SoloX - Application Performance Monitoring
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#tabs-device-info" class="nav-link" data-bs-toggle="tab">  
+                            <a href="#tabs-device-info" class="nav-link" data-bs-toggle="tab">
                                 {% if lan == 'cn' %} 设备信息 {% else %} DEVICE INFO {% endif %}
                             </a>
                         </li>
@@ -191,7 +191,7 @@ SoloX - Application Performance Monitoring
                     </div>
                 </div>
             </div>
-            
+
             <a class="dropdown-item" style="margin-top: 10px;">
                 <svg t="1689735902363" class="icon me-2" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1518" width="320" height="320"><path d="M512.9 503.4m-184.8 0a184.8 184.8 0 1 0 369.6 0 184.8 184.8 0 1 0-369.6 0Z" fill="#03BD61" p-id="1519"></path><path d="M512 79.3C273.4 79.3 79.3 273.4 79.3 512S273.4 944.7 512 944.7 944.7 750.6 944.7 512 750.6 79.3 512 79.3z m0 790.9c-197.5 0-358.2-160.7-358.2-358.2S314.5 153.8 512 153.8 870.2 314.5 870.2 512 709.5 870.2 512 870.2z" fill="#23202D" p-id="1520"></path><path d="M753.7 467.5H548.5V244.2c0-20.6-16.7-37.2-37.2-37.2S474 223.6 474 244.2v260.6c0 20.6 16.7 37.2 37.2 37.2h242.5c20.6 0 37.2-16.7 37.2-37.2s-16.6-37.3-37.2-37.3z" fill="#23202D" p-id="1521"></path></svg>
                 {% if lan == 'cn' %} 启动时间 {% else %} Start-up Time {% endif %}
@@ -218,7 +218,7 @@ SoloX - Application Performance Monitoring
                 </span>
             </a>
             {% endif %}
-            
+
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" style="margin-top: 10px;">
                 <input type="file" class="form-control" id="app-file" accept=".apk,.ipa"/>
@@ -236,7 +236,7 @@ SoloX - Application Performance Monitoring
                     {% if lan == 'cn' %} 安装 {% else %} Install {% endif %}
                 </button>
             </a>
-            
+
         </div>
     </div>
     <div class="apm-data mt-1" style="width: 75%;">
@@ -316,7 +316,7 @@ SoloX - Application Performance Monitoring
                 </a>
                 <span class="form-help" style="margin-left: 10px;" data-bs-toggle="popover" data-bs-placement="top" data-bs-html="true" data-bs-content="
                 If no results are returned, please reinstall py-ios-device [pip install py-ios-device].
-                <p class='mb-0'><a href='https://github.com/YueChen-C/py-ios-device' target='_blank'>Documentation</a></p>">?</span> 
+                <p class='mb-0'><a href='https://github.com/YueChen-C/py-ios-device' target='_blank'>Documentation</a></p>">?</span>
                 {% endif %}
             </div>
         </div>
@@ -367,7 +367,7 @@ SoloX - Application Performance Monitoring
                 }
             });
         });
-  });
+    });
 
     $('#debug-connect').click(function () {
         initializeEnv();
@@ -394,7 +394,7 @@ SoloX - Application Performance Monitoring
                 }else{
                     SwalLoading('Package initialization!','Initializing Packages, please wait a mmoment.');
                 }
-                
+
             },
             success: function (data) {
                 if(data['status'] != 1 ) {
@@ -402,7 +402,7 @@ SoloX - Application Performance Monitoring
                         SwalFire('error', '连接失败','请检查当前移动设备的是否连接了PC端', 2000);
                     }else{
                         SwalFire('error', 'Connect failed !', 'No devices found', 2000);
-                    } 
+                    }
                 }else{
                     for(var i=0;i<data['pkgnames'].length;i++){
                         $('.select-app').append('<option>'+data['pkgnames'][i].trim()+'</option>')
@@ -441,7 +441,7 @@ SoloX - Application Performance Monitoring
                             SwalFire('warning', '警告','没有发现该app的进程,请检查app是否已经启动', 5000);
                         }else{
                             SwalFire('warning', 'Warning', data['msg'], 5000);
-                        } 
+                        }
                     }else{
                         for(var i=0;i<data['pids'].length;i++){
                             $('.select-pid').append('<option>'+data['pids'][i]+'</option>')
@@ -491,7 +491,7 @@ SoloX - Application Performance Monitoring
                         SwalFire('error', '连接失败','请检查当前移动设备的是否连接了PC端', 5000);
                     }else{
                         SwalFire('error', 'Connect failed !', 'No devices found', 5000);
-                    } 
+                    }
                 }else{
                     for(var i=0;i<data['devices'].length;i++){
                         $('.select-device').append('<option>'+data['devices'][i].trim()+'</option>');
@@ -534,7 +534,7 @@ SoloX - Application Performance Monitoring
                 process:process
             },
             beforeSend: function () {
-               window.clearTimeout(timerQ);
+                window.clearTimeout(timerQ);
             },
             success: function (data) {
                 console.log(data)
@@ -627,7 +627,7 @@ SoloX - Application Performance Monitoring
                                 y_temperature = data['temperature'];
                                 seriesLevel.addPoint([x, y_level], true, true);
                                 seriesTemperature.addPoint([x, y_temperature], true, true);
-                                
+
                             }else{
                                 var seriesTemperature = battery_chart.series[0];
                                 var seriesCurrent = battery_chart.series[1];
@@ -642,7 +642,7 @@ SoloX - Application Performance Monitoring
                                 seriesCurrent.addPoint([x, y_current], true, true);
                                 seriesVoltage.addPoint([x, y_voltage], true, true);
                                 seriesPower.addPoint([x, y_power], true, true);
-                            } 
+                            }
                             timerQ = setTimeout(getBattery(device), 1000);
                         }catch (e) {}
                     }else{
@@ -1177,7 +1177,7 @@ SoloX - Application Performance Monitoring
                 seriesFinal = seriesiOSBettery;
                 legend = true;
                 yAxis = yAxis_plot;
-                break;    
+                break;
         }
 
         let apm_chart = Highcharts.stockChart(apmType, {
@@ -1488,7 +1488,7 @@ SoloX - Application Performance Monitoring
                 record_switch:record_switch
             },
             beforeSend: function () {
-                
+
                 if(lan == 'cn'){
                     SwalLoading('保存数据','正在保存数据生成报告, 请不要离开页面.')
                 }else{
@@ -1504,7 +1504,7 @@ SoloX - Application Performance Monitoring
             }
         });
     }
-    
+
     $('#run-apm').click(function () {
         stop = false;
         $('#stop-apm').show();
@@ -1547,7 +1547,7 @@ SoloX - Application Performance Monitoring
     var socket
     if(platform == 'Android'){
         socket = io.connect('http://' + document.domain + ':' + location.port + '/logcat',{'forceNew':true });
-        
+
     }
     function startLogcat() {
         let device = $('.select-device').val();
@@ -1577,7 +1577,7 @@ SoloX - Application Performance Monitoring
     function cppyLogcat() {
         const textValue = document.createElement('textarea');
         document.body.appendChild(textValue);
-        textValue.value = $("#logcat-content").text(); 
+        textValue.value = $("#logcat-content").text();
         textValue.select();
         var result = document.execCommand('copy');
         console.log(result)
@@ -1588,7 +1588,7 @@ SoloX - Application Performance Monitoring
     function clearLogcat() {
         $('#logcat-content').empty();
     };
-    
+
     function getCurActivity(){
         let device = $('.select-device').val();
         if(device){
@@ -1728,8 +1728,8 @@ SoloX - Application Performance Monitoring
         }else{
             SwalFire('error', 'Install failed !', 'No link found', 2000);
         }
-        
-        
+
+
     }
 
     function installFile(){

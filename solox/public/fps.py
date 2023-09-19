@@ -30,9 +30,11 @@ class SurfaceStatsCollector(object):
         self.surfaceview = surfaceview
         self.fps_queue = fps_queue
 
+        self.focus_surfaceview = None
         self.persistent_mode = True
         self.last_timestamp_calc = 0
         self.last_calc_result = (0, 0)
+        self.last_frames = []
         self.timestamps_calc_count = 0
 
     def start(self, start_time):
@@ -210,27 +212,55 @@ class SurfaceStatsCollector(object):
         return jank
 
     def _calculate_results_persistent(self, refresh_period, timestamps):
+        calc_gap = 0.5 # s
+
         if len(timestamps) == 0:
             return 0, 0
         if self.last_timestamp_calc == 0:
             self.last_timestamp_calc = timestamps[0][1]
             self.timestamps_calc_count = len(timestamps)
-            return
+            self.last_frames = timestamps
+            return 0, 0
 
         ts = timestamps[-1][1] # s
         self.timestamps_calc_count += len(timestamps)
+        jank = self._calculate_janky_persistent(timestamps)
+        self.last_calc_result = (self.last_calc_result[0], jank * self.last_calc_result[0])
 
         # logger.debug('elapse: %.2f frams: %d'% (ts - self.last_timestamp_calc, self.timestamps_calc_count))
-        if ts - self.last_timestamp_calc < 1.0:
+        if ts - self.last_timestamp_calc < calc_gap:
             return self.last_calc_result
 
         fps = 1.0 * self.timestamps_calc_count / (ts - self.last_timestamp_calc)
-        jank = self._calculate_janky(timestamps)
         self.last_timestamp_calc = ts
         self.timestamps_calc_count = 0
-        self.last_calc_result = (fps, jank)
+        self.last_calc_result = (fps, jank * fps) # jank show big
         return self.last_calc_result
 
+    def _calculate_janky_persistent(self, timestamps):
+        """
+        https://bbs.perfdog.qq.com/article-detail.html?id=6
+        PerfDog Jank计算方法：
+        同时满足两条件，则认为是一次卡顿Jank.
+        ①Display FrameTime>前三帧平均耗时2倍。
+        ②Display FrameTime>两帧电影帧耗时 (1000ms/24*2=84ms)。
+        同时满足两条件，则认为是一次严重卡顿BigJank.
+        ①Display FrameTime >前三帧平均耗时2倍。
+        ②Display FrameTime >三帧电影帧耗时(1000ms/24*3=125ms)。
+        """
+        self.last_frames += timestamps
+        if len(self.last_frames) < 4:
+            return 0
+
+        last = self.last_frames[-1][1] - self.last_frames[-2][1]
+        avg3 = sum([
+            last,
+            self.last_frames[-2][1] - self.last_frames[-3][1],
+            self.last_frames[-3][1] - self.last_frames[-4][1],
+        ]) / 3.0
+        if last > 2. * avg3 and last > 0.084:
+            return 1
+        return 0
 
     def _calculate_janky(self, timestamps):
         tempstamp = 0
@@ -442,9 +472,12 @@ class SurfaceStatsCollector(object):
                     break
         else:
             # self.focus_window = self.get_surfaceview_activity()
-            self.focus_window = self.get_surfaceview()
+            is_first = self.focus_surfaceview is None
+            self.focus_surfaceview = self.get_surfaceview()
+            if is_first:
+                logger.info("SurfaceView %s", self.focus_surfaceview)
             results = adb.shell(
-                cmd='dumpsys SurfaceFlinger --latency \\"%s\\"' % self.focus_window, deviceId=self.device)
+                cmd='dumpsys SurfaceFlinger --latency \\"%s\\"' % self.focus_surfaceview, deviceId=self.device)
             results = results.replace("\r\n", "\n").splitlines()
             if not len(results):
                 return (None, None)
@@ -561,4 +594,4 @@ class FPSMonitor(Monitor):
     def get_fps(self):
         global collect_fps
         global collect_jank
-        return collect_fps, collect_jank
+        return int(collect_fps), int(collect_jank)

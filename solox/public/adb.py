@@ -8,11 +8,20 @@
 @Update  :  2022/7/14 by Rafa chen
 """
 import os
+import sys
 import platform
 import stat
 import subprocess
+from logzero import logger
 
-STATICPATH = os.path.dirname(os.path.realpath(__file__))
+def public_path():
+    """Returns the base application path."""
+    if hasattr(sys, 'frozen'):
+        # Handles PyInstaller
+        return os.path.join(os.path.dirname(sys.executable), 'public')
+    return os.path.dirname(os.path.realpath(__file__))
+
+STATICPATH = public_path()
 DEFAULT_ADB_PATH = {
     "Windows": os.path.join(STATICPATH, "adb", "windows", "adb.exe"),
     "Darwin": os.path.join(STATICPATH, "adb", "mac", "adb"),
@@ -74,13 +83,14 @@ class ADB(object):
 
     def __init__(self):
         self.adb_path = builtin_adb_path()
+        logger.info('adb_path %s', os.path.abspath(self.adb_path))
 
     def shell(self, cmd, deviceId):
         run_cmd = f'{self.adb_path} -s {deviceId} shell {cmd}'
         result = subprocess.Popen(run_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[
             0].decode("utf-8").strip()
         return result
-    
+
     def tcp_shell(self, deviceId, cmd):
         run_cmd = f'{self.adb_path} -s {deviceId} {cmd}'
         result = os.system(run_cmd)
@@ -89,7 +99,7 @@ class ADB(object):
     def shell_noDevice(self, cmd):
         run_cmd = f'{self.adb_path} {cmd}'
         result = os.system(run_cmd)
-        return result    
+        return result
 
 
 

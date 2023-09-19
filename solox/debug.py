@@ -8,14 +8,16 @@ import requests
 import socket
 import psutil
 import sys
-from view.apis import api
-from view.pages import page
+
 from logzero import logger
 from threading import Lock
 from flask_socketio import SocketIO, disconnect
 from flask import Flask
 from pyfiglet import Figlet
+
 from solox import __version__
+from solox.view.apis import api
+from solox.view.pages import page
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.register_blueprint(api)
@@ -71,7 +73,7 @@ def ip() -> str:
     try:
         ip = socket.gethostbyname(socket.gethostname())
     except:
-        ip = '127.0.0.1'    
+        ip = '127.0.0.1'
     return ip
 
 def listen(port):
@@ -93,9 +95,7 @@ def status(host: str, port: int):
 def open_url(host: str, port: int):
     flag = True
     while flag:
-        logger.info('start solox server ...')
-        f = Figlet(font="slant", width=300)
-        print(f.renderText("SOLOX {}".format(__version__)))
+        time.sleep(1)
         flag = status(host, port)
     webbrowser.open('http://{}:{}/?platform=Android&lan=en'.format(host, port), new=2)
     logger.info('Running on http://{}:{}/?platform=Android&lan=en (Press CTRL+C to quit)'.format(host, port))
@@ -107,17 +107,27 @@ def start(host: str, port: int):
 def main(host=ip(), port=50003):
     try:
         if listen(port):
-            pool = multiprocessing.Pool(processes=2)
-            pool.apply_async(start, (host, port))
+            pool = multiprocessing.Pool(processes=1)
             pool.apply_async(open_url, (host, port))
             pool.close()
+
+            logger.info('start solox server ...')
+            f = Figlet(font="slant", width=300)
+            print(f.renderText("SOLOX {}".format(__version__)))
+            start(host, port)
+
             pool.join()
     except KeyboardInterrupt:
         logger.info('stop solox success')
         sys.exit()
     except Exception as e:
-        logger.exception(e)            
-
+        logger.exception(e)
 
 if __name__ == '__main__':
-    main()
+    multiprocessing.freeze_support()
+
+    if sys.executable.endswith('.exe'):
+        dirname = os.path.dirname(sys.executable)
+        os.chdir(dirname)
+    logger.info('cwd %s', os.getcwd())
+    main(host="127.0.0.1")
